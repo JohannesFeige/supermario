@@ -19,3 +19,9 @@ export function createBackgroundLayer(backgrounds, sprites) {
         context.drawImage(buffer, 0, 0);
     };
 }
+
+export function createSpriteLayer(entity) {
+    return context => {
+        entity.draw(context);
+    };
+}
