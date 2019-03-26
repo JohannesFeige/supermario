@@ -10,28 +10,28 @@ export default class KeyboardState {
         this.keyMap = new Map();
     }
 
-    addMaping(keyCode, callback) {
-        this.keyMap.set(keyCode, callback);
+    addMaping(code, callback) {
+        this.keyMap.set(code, callback);
     }
 
     handleEvent(event) {
-        const { keyCode } = event;
+        const { code } = event;
 
-        if (!this.keyMap.has(keyCode)) {
+        if (!this.keyMap.has(code)) {
             return;
         }
 
         event.preventDefault();
         const keyState = event.type === 'keydown' ? PRESSED : RELEASED;
 
-        if (this.keyStates.get(keyCode) === keyState) {
+        if (this.keyStates.get(code) === keyState) {
             return;
         }
 
-        this.keyStates.set(keyCode, keyState);
+        this.keyStates.set(code, keyState);
         console.log(this.keyStates);
 
-        this.keyMap.get(keyCode)(keyState);
+        this.keyMap.get(code)(keyState);
     }
 
     listenTo(window) {
