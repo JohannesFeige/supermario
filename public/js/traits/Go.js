@@ -9,10 +9,5 @@ export default class Go extends Trait {
 
     update(entity, deltaTime) {
         entity.vel.x = this.speed * this.dir * deltaTime;
-
-        if (this.engageTime > 0) {
-            entity.vel.y = -this.velocity;
-            this.engageTime -= deltaTime;
-        }
     }
 }
