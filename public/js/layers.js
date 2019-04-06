@@ -11,10 +11,6 @@ export function createBackgroundLayer(level, sprites) {
     let startIndex;
     let endIndex;
     function redraw(drawFrom, drawTo) {
-        if (drawFrom === startIndex && drawTo === endIndex) {
-            return;
-        }
-
         startIndex = drawFrom;
         endIndex = drawTo;
 
@@ -22,13 +18,17 @@ export function createBackgroundLayer(level, sprites) {
             const col = tiles.grid[x];
             if (col) {
                 col.forEach((tile, y) => {
-                    sprites.drawTile(tile.name, context, x - startIndex, y);
+                    if (sprites.animations.has(tile.name)) {
+                        sprites.drawAnim(tile.name, context, x - startIndex, y, level.totalTime);
+                    } else {
+                        sprites.drawTile(tile.name, context, x - startIndex, y);
+                    }
                 });
             }
         }
     }
 
-    return (context, camera) => {
+    return function drawBackgroundLayer(context, camera) {
         const drawWidth = resolver.toIndex(camera.size.x);
         const drawFrom = resolver.toIndex(camera.pos.x);
         const drawTo = drawFrom + drawWidth;
@@ -51,11 +51,7 @@ export function createSpriteLayer(entities, width = 64, height = 64) {
 
             entity.draw(spriteBufferContext);
 
-            context.drawImage(
-                spriteBuffer,
-                entity.pos.x - camera.pos.x,
-                entity.pos.y - camera.pos.y
-            );
+            context.drawImage(spriteBuffer, entity.pos.x - camera.pos.x, entity.pos.y - camera.pos.y);
         });
     };
 }
@@ -76,24 +72,14 @@ export function createCollisionLayer(level) {
         context.strokeStyle = 'blue';
         resolvedTiles.forEach(({ x, y }) => {
             context.beginPath();
-            context.rect(
-                x * tileSize - camera.pos.x,
-                y * tileSize - camera.pos.y,
-                tileSize,
-                tileSize
-            );
+            context.rect(x * tileSize - camera.pos.x, y * tileSize - camera.pos.y, tileSize, tileSize);
             context.stroke();
         });
 
         context.strokeStyle = 'red';
         level.entities.forEach(entity => {
             context.beginPath();
-            context.rect(
-                entity.pos.x - camera.pos.x,
-                entity.pos.y - camera.pos.y,
-                entity.size.x,
-                entity.size.y
-            );
+            context.rect(entity.pos.x - camera.pos.x, entity.pos.y - camera.pos.y, entity.size.x, entity.size.y);
             context.stroke();
         });
 
