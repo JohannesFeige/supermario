@@ -61,12 +61,12 @@ export function createCollisionLayer(level) {
     const tileSize = tileResolver.tileSize;
 
     const getByIndexOriginal = tileResolver.getByIndex;
-    tileResolver.getByIndex = function(x, y) {
+    tileResolver.getByIndex = function getByIndexFake(x, y) {
         resolvedTiles.push({ x, y });
         return getByIndexOriginal.call(tileResolver, x, y);
     };
 
-    return function(context, camera) {
+    return function drawCollision(context, camera) {
         context.strokeStyle = 'blue';
         resolvedTiles.forEach(({ x, y }) => {
             context.beginPath();
@@ -77,7 +77,12 @@ export function createCollisionLayer(level) {
         context.strokeStyle = 'red';
         level.entities.forEach(entity => {
             context.beginPath();
-            context.rect(entity.pos.x - camera.pos.x, entity.pos.y - camera.pos.y, entity.size.x, entity.size.y);
+            context.rect(
+                entity.bounds.left - camera.pos.x,
+                entity.bounds.top - camera.pos.y,
+                entity.size.x,
+                entity.size.y
+            );
             context.stroke();
         });
 
